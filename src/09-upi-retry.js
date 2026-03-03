@@ -35,5 +35,73 @@
  *   // => { attempts: 5, success: false, totalWaitTime: 15 }
  */
 export function upiRetry(outcomes) {
-  // Your code here
+  // if(!Array.isArray(outcomes) || outcomes.length === 0) {
+  //   return { attempts: 0, success: false, totalWaitTime: 0 }; // Invalid input
+  // }
+
+  // let attempts = 0;
+  // let success = false;
+  // let totalWaitTime = 0;
+
+  // do {
+  //   const outcome = outcomes[attempts];
+  //   attempts ++; // Increment attempt count
+
+  //   if (outcome === "success") {
+  //     success = true; // Payment successful, stop retrying
+  //     break;
+  //   } else if (outcome === "fail") {
+  //     // Calculate wait time for this attempt (exponential backoff)
+  //     const waitTime = Math.pow(2, attempts - 1); // 1s, 2s, 4s, 8s for attempts 1-4
+  //     if (attempts < outcomes.length) { // Only add wait time if we will retry again
+  //       totalWaitTime += waitTime; // Add wait time after a failed attempt
+  //     }
+  //   } else {
+  //     // Invalid outcome, treat as fail but don't add wait time
+  //     continue;
+  //   }
+  // } while (attempts < outcomes.length && attempts < 5); // Max 5 attempts
+
+  // return { attempts, success, totalWaitTime };
+  /**
+   * UPI Retry Logic with Exponential Backoff
+   */
+  {
+    // Validation: Agar array empty hai ya invalid hai
+   if(!Array.isArray(outcomes) || outcomes.length === 0) {
+   return { attempts: 0, success: false, totalWaitTime: 0 }; // Invalid input
+  // }
+   }
+    let attempts = 0;
+    let totalWaitTime = 0;
+    let isSuccess = false;
+    let currentWait = 1; // Start with 1s
+
+    do {
+      // 1. Current attempt ka result check karo
+      const currentOutcome = outcomes[attempts];
+      attempts++; // Attempt count badhao
+
+      if (currentOutcome === "success") {
+        isSuccess = true;
+        break; // Success hote hi loop se bahar!
+      }
+
+      // 2. Agar fail hua aur next attempt ki gunjayish hai (max 5)
+      if (attempts < 5 && attempts < outcomes.length) {
+        totalWaitTime += currentWait;
+        currentWait *= 2; // Exponential backoff: 1, 2, 4, 8...
+      }
+    } while (attempts < 5 && attempts < outcomes.length);
+
+    return {
+      attempts: attempts,
+      success: isSuccess,
+      totalWaitTime: totalWaitTime,
+    };
+  }
 }
+
+
+  // Your code here
+

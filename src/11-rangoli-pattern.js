@@ -37,4 +37,25 @@
  */
 export function rangoli(n) {
   // Your code here
+  if (typeof n !== 'number' || n <= 0 || !Number.isInteger(n) || !Number.isFinite(n)) {
+    return []; // Invalid input
+  }
+  
+  const pattern = [];
+  const totalRows = 2 * n - 1;
+  
+  for (let i = 1; i <= totalRows; i++) {
+    let starsCount;
+    if (i <= n) {
+      starsCount = i; // Top half
+    } else {
+      starsCount = totalRows - i + 1; // Bottom half
+    }
+    
+    const spacesCount = n - starsCount; // Leading spaces for center alignment
+    const row = ' '.repeat(spacesCount) + '*'.repeat(starsCount).split('').join(' '); // Create row string
+    pattern.push(row);
+  }
+  
+  return pattern;
 }

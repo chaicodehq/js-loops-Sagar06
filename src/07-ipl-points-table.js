@@ -37,5 +37,68 @@
  *   // Sorted: CSK(3), RCB(1), MI(0)
  */
 export function iplPointsTable(matches) {
-  // Your code here
+  if (!Array.isArray(matches) || matches.length === 0) {
+    return []; // Invalid input
+  }
+
+  const teams = {};
+  
+  for (const match of matches) {
+    const { team1, team2, result, winner } = match;
+    if (typeof team1 !== 'string' || typeof team2 !== 'string' || typeof result !== 'string') {
+      continue; // Skip invalid match
+    }
+    
+    // Initialize teams in accumulator if not present
+    if (!teams[team1]) {
+      teams[team1] = { team: team1, played: 0, won: 0, lost: 0, tied: 0, noResult: 0, points: 0 };
+    }
+    if (!teams[team2]) {
+      teams[team2] = { team: team2, played: 0, won: 0, lost: 0, tied: 0, noResult: 0, points: 0 };
+    }
+
+    // Update stats for both teams
+    teams[team1].played += 1;
+    teams[team2].played += 1;
+
+    switch (result) {
+      case "win":
+        if (winner === team1) {
+          teams[team1].won += 1;
+          teams[team1].points += 2;
+          teams[team2].lost += 1;
+        } else if (winner === team2) {
+          teams[team2].won += 1;
+          teams[team2].points += 2;
+          teams[team1].lost += 1;
+        }
+        break;
+      case "tie":
+        teams[team1].tied += 1;
+        teams[team1].points += 1;
+        teams[team2].tied += 1;
+        teams[team2].points += 1;
+        break;
+      case "no_result":
+        teams[team1].noResult += 1;
+        teams[team1].points += 1;
+        teams[team2].noResult += 1;
+        teams[team2].points += 1;
+        break;
+      default:
+        continue; // Skip invalid result
+    }
+  }
+
+  // Convert object to array and sort
+  const sortedTeams = Object.values(teams);
+  
+  sortedTeams.sort((a, b) => {
+    if (b.points !== a.points) {
+      return b.points - a.points; // Descending by points
+    }
+    return a.team.localeCompare(b.team); // Ascending by team name
+  });
+
+  return sortedTeams; 
 }

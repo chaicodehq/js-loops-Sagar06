@@ -42,5 +42,88 @@
  *   // => { months: -1, totalPaid: -1, totalInterest: -1 }
  */
 export function calculateEMI(principal, monthlyRate, emi) {
-  // Your code here
+  // Input validation
+  // if (typeof principal !== 'number' || typeof monthlyRate !== 'number' || typeof emi !== 'number' ||
+  //     principal <= 0 || monthlyRate <= 0 || emi <= 0 || !Number.isFinite(principal) || !Number.isFinite(monthlyRate) || !Number.isFinite(emi)) {
+  //   return { months: -1, totalPaid: -1, totalInterest: -1 }; // Invalid input
+  // }
+
+  // // Infinite loop protection: Check if EMI is less than or equal to first month's interest
+  // const firstMonthInterest = principal * monthlyRate;
+  // if (emi <= firstMonthInterest) {
+  //   return { months: -1, totalPaid: -1, totalInterest: -1 }; // Infinite loop scenario
+  // }
+
+  // let remaining = principal;
+  // let months = 0;
+  // let totalPaid = 0;
+  // let totalInterest = 0;
+
+  // while (remaining > 0) {
+  //   const interest = remaining * monthlyRate; // Calculate interest for the month
+  //   totalInterest += interest; // Accumulate total interest
+  //   remaining += interest; // Add interest to remaining balance
+
+  //   if (remaining < emi) {
+  //     totalPaid += remaining; // Pay only what's left if it's less than EMI
+  //     remaining = 0; // Loan is fully paid
+  //   } else {
+  //     totalPaid += emi; // Pay full EMI
+  //     remaining -= emi; // Deduct EMI from remaining balance
+  //   }
+
+  //   months += 1; // Increment month count
+  // }
+
+  // return { months, totalPaid, totalInterest }; // Return the result
+  // Return the result
+  /**
+   * EMI Calculator with Interest and Principal tracking
+   */
+ {
+    // 1. Validation: Sab numbers positive hone chahiye
+   if (typeof principal !== 'number' || typeof monthlyRate !== 'number' || typeof emi !== 'number' ||
+    principal <= 0 || monthlyRate <= 0 || emi <= 0 || !Number.isFinite(principal) || !Number.isFinite(monthlyRate) || !Number.isFinite(emi)) {
+   return { months: -1, totalPaid: -1, totalInterest: -1 }; // Invalid input
+ }
+
+    // 2. Infinite Loop Protection:
+    // Agar pehle mahine ka interest hi EMI se zyada hai, loan kabhi khatam nahi hoga.
+    if (emi <= principal * monthlyRate) {
+      return { months: -1, totalPaid: -1, totalInterest: -1 };
+    }
+
+    let remaining = principal;
+    let months = 0;
+    let totalInterest = 0;
+    let totalPaid = 0;
+
+    // 3. While Loop: Jab tak loan bacha hai
+    while (remaining > 0) {
+      // A. Interest calculate karo aur total mein add karo
+      let interestForThisMonth = remaining * monthlyRate;
+      totalInterest += interestForThisMonth;
+
+      // B. Balance mein interest add karo
+      remaining += interestForThisMonth;
+      months++;
+
+      // C. Last Month logic:
+      // Agar remaining balance EMI se kam hai, toh sirf bacha hua balance pay karo
+      if (remaining < emi) {
+        totalPaid += remaining;
+        remaining = 0; // Loan khatam!
+      } else {
+        // Regular EMI payment
+        totalPaid += emi;
+        remaining -= emi;
+      }
+    }
+
+    return {
+      months: months,
+      totalPaid: Number(totalPaid.toFixed(2)), // Optional: Rounding for clean decimals
+      totalInterest: Number(totalInterest.toFixed(2)),
+    };
+  }
 }
